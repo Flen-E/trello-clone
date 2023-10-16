@@ -1,10 +1,12 @@
 import {atom, selector} from "recoil"
 
+//atom
 export const minuteState = atom({
     key: "minutes",
     default : 0,
 });
 
+//selector
 export const hourSelector = selector<number>({
     key:"hours",
     get: ({get}) => {
