@@ -1,24 +1,21 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useRecoilState } from "recoil";
+import { hourSelector, minuteState } from "./atoms";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+  const [minutes, setMinutes] = useRecoilState(minuteState);
+  const [hours, setHours] = useRecoilState(hourSelector);
+  const onMinutesChange = (event:React.FormEvent<HTMLInputElement>) => {
+    setMinutes(+event.currentTarget.value); // +가 들어가면 숫자로 바꿔줌 숫자에 + "" 넣어서 문자열로 바꾸는거와 비슷한 느낌
+  };
+  const onHoursChange = (event:React.FormEvent<HTMLInputElement>) =>{
+    setHours(+event.currentTarget.value);
+  };
+
+
+  return ( 
+    <div>
+      <input value={minutes} onChange={onMinutesChange} type="number" placeholder="Minutes"/>
+      <input value={hours} onChange={onHoursChange} type="number" placeholder="Hours"/>
     </div>
   );
 }
