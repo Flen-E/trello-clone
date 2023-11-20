@@ -1,11 +1,13 @@
-import {DragDropContext, Droppable, Draggable, DropResult} from "react-beautiful-dnd";
+import {DragDropContext, DropResult} from "react-beautiful-dnd";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { toDoState } from "./atoms";
 
+import Board from "./Components/Board";
+
 const Wrapper = styled.div`
   display:flex;
-  max-width:480px;
+  max-width:680px;
   width: 100%;
   margin : 0 auto;
   justify-content: center;
@@ -16,63 +18,42 @@ const Wrapper = styled.div`
 const Boards = styled.div`
   display: grid;
   width: 100%;
-  grid-template-columns: repeat(1,1fr);
+  gap: 10px;
+  grid-template-columns: repeat(3,1fr);
 
-`;
-
-const Board = styled.div`
-  padding : 20px 10px;
-  padding-top: 30px;
-  background-color: ${(props) => props.theme.boardColor};
-  border-radius: 5px;
-  min-height : 200px;
-`;
-
-const Card = styled.div`
-  border-radius: 5px;
-  padding: 10px 10px;
-  background-color: ${(props) => props.theme.cardColor};
-  margin-bottom: 5px;
 `;
 
 function App() {
   const [toDos, setToDos]  = useRecoilState(toDoState);
-  const onDragEnd = ({draggableId, destination, source} : DropResult) =>{
+  const onDragEnd = (info : DropResult) =>{
+    console.log(info);
+    const {destination, draggableId, source} = info;
     if(!destination) return;
-    setToDos(oldToDos =>{
-      const copyToDos = [...oldToDos];
-      // 1) Delete item on source.index
-      copyToDos.splice(source.index, 1);
-      // 2) Put back the item on the destination.index
-      copyToDos.splice(destination?.index, 0, draggableId);
-      return copyToDos;
-    })
+    if(destination?.droppableId === source.droppableId){
+      // same board movement.
+      setToDos((allBoards) =>{
+        const boardCopy = [...allBoards[source.droppableId]];
+        // 1) Delete item on source.index
+        boardCopy.splice(source.index, 1);
+        // 2) Put back the item on the destination.index
+        boardCopy.splice(destination?.index, 0, draggableId);
+        return {
+          ...allBoards,
+          [source.droppableId] : boardCopy,
+        };
+      });
+    }
+    if(destination.droppableId !== source.droppableId){
+      // cross board movement.
+      
+    }
+    
   };
   return ( 
     <DragDropContext onDragEnd={onDragEnd}>
       <Wrapper>
         <Boards>
-        <Droppable droppableId="one">
-          {(magic) => 
-          <Board ref={magic.innerRef} {...magic.droppableProps}>
-            {toDos.map((toDo, index) => (
-              <Draggable key={toDo} draggableId={toDo} index={index}>
-                {(magic) => (
-                  <Card 
-                    ref = {magic.innerRef}
-                    {...magic.draggableProps}
-                    {...magic.dragHandleProps}
-                  >
-                    {toDo}
-                  </Card>
-               )}
-              </Draggable>
-              )
-            )}
-            {magic.placeholder}
-          </Board>
-          }
-        </Droppable>
+          {Object.keys(toDos).map(boardId => <Board boardId={boardId} key = {boardId} toDos = {toDos[boardId]} />)}
         </Boards>  
       </Wrapper>
     </DragDropContext>
