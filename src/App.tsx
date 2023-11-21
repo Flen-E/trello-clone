@@ -45,7 +45,19 @@ function App() {
     }
     if(destination.droppableId !== source.droppableId){
       // cross board movement.
-      
+      setToDos((allBoards) =>{
+        const sourceBoard = [...allBoards[source.droppableId]];
+        const destinationBoard = [...allBoards[destination.droppableId]];
+        // 1) Delete item on source.index
+        sourceBoard.splice(source.index, 1);
+        // 2) Put back the item on the destination.index
+        destinationBoard.splice(destination?.index, 0, draggableId);
+        return {
+          ...allBoards,
+          [source.droppableId] : sourceBoard,
+          [destination.droppableId] : destinationBoard,
+        };
+      });
     }
     
   };
