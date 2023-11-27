@@ -31,5 +31,4 @@ function DragabbleCard({toDo,index} : IDragabbleCardProps) {
     </Draggable>
   );
 }
-
 export default React.memo(DragabbleCard);
